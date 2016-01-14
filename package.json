@@ -10,9 +10,11 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.14.2",
+    "dotenv": "^1.2.0",
     "express": "^4.13.3",
     "guardian-news": "0.0.2",
     "memory-cache": "^0.1.4",
+    "promise": "^7.1.1",
     "tern-node-express": "^0.3.0"
   }
 }
