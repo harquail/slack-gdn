@@ -9,7 +9,7 @@ var guardian = require('guardian-news');
 var http = require('http'); //the variable doesn't necessarily have to be named http
 
 app.post('/', function(req,res){
-  cache.put('houdini', 'disappear', 100) // Time in ms
+  cache.put('houdini', 'disappear', 100000) // Time in ms
 })
 
 guardian.config({
