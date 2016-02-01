@@ -8,47 +8,60 @@ app.use(bodyParser.urlencoded({
 }));
 var cache = require('memory-cache');
 var guardian = require('guardian-news');
-
-var http = require('http'); //the variable doesn't necessarily have to be named http
+var http = require('http');
 
 guardian.config({
   apiKey: process.env.GUARDIAN_KEY
 });
 
-
-guardian.content({
-  q: 'clowns',
-}).then(function(response) {
-
-  var desiredResults = 5;
-  var totalPages = response.response.pages;
-  var currentPage = response.response.page;
-  var results = response.response.results;
-  cache.put('houdini', 'disappear', 100000); // Time in ms
-
-  var responseData;
-
-  for (var i in results) {
-    if(i >= desiredResults){
-      break;
-    }
-    // responseData.response_type = 
-    console.log(results[i].webUrl)
-  }
-
-  // res.send()
-}, function(err) {
-  console.log(err);
-});
-
-
 app.post('/', function(req, res) {
 
+  var desiredResults = 5;
+  var responsesSent = 0;
+  
+  guardian.content({
+    page:1,
+    pageSize: 50,
+    q: req.body.text
+  }).then(function(response) {
 
+    var totalPages = response.response.pages;
+    var currentPage = response.response.currentPage;
+    var results = response.response.results;
+
+console.log("hiya");
+
+    // var responseData;
+    // var i = 0;
+    while (results.length > 0) {
+      var currentResult = results.shift();
+      // console.log(currentResult);
+      if(responsesSent >= desiredResults){
+        break;
+      }
+
+      var webUrl = currentResult.webUrl;
+      if (cache.get(webUrl) == null){
+        console.log(webUrl)
+        cache.put(webUrl, webUrl, 1000000); // Time in ms (10s)
+        // i += 1;
+        responsesSent +=1;
+      }
+      else{
+        console.log("+ already visited: " + webUrl);
+        // i += 1;
+      }
+
+    }
+    console.log("page " + currentPage + " of "+ totalPages);
+
+
+    res.send()
+  }, function(err) {
+    console.log(err);
+  });
 
 })
-
-
 
 
 var port = Number(process.env.PORT || 5000);
