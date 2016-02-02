@@ -20,12 +20,11 @@ app.get('/', function(req, res) {
   res.send("visited urls: " + cache.keys().toString());
 })
 app.post('/', function(req, res) {
-
   fetchArticles(req,res,0,1);
-
 })
 
 function fetchArticles(req, res,responsesSent,page){
+  console.log(req.body);
   var desiredResults = 5;
   guardian.content({
     page:page,
