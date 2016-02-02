@@ -55,7 +55,7 @@ function fetchArticles(req, res,responsesSent,page){
           json: {
             "text": webUrl,
             "response_type": "in_channel",
-            "unfurl_links": true 
+            "unfurl_links": "true" 
           }
         };
 
