@@ -31,6 +31,7 @@ function fetchArticles(req, res,responsesSent,page){
     pageSize: desiredResults*10,
     q: req.body.text
   }).then(function(response) {
+    console.log("then");
 
     var totalPages = response.response.pages;
     var currentPage = response.response.currentPage;
@@ -46,7 +47,7 @@ function fetchArticles(req, res,responsesSent,page){
       if (cache.get(webUrl) == null){
         cache.put(webUrl, webUrl, 1000000); // Time in ms (10s)
         var responseURL = req.body.response_url;
-
+        console.log("url " + webUrl);
 
         var options = {
           uri: responseURL,
@@ -66,7 +67,6 @@ function fetchArticles(req, res,responsesSent,page){
           }
         });
 
-console.log("chansey");
         responsesSent +=1;
       }
     }
