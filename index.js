@@ -15,6 +15,9 @@ guardian.config({
   apiKey: process.env.GUARDIAN_KEY || ""
 });
 
+app.get('/', function(req, res) {
+  res.send("visited urls: " + cache.keys().toString());
+})
 app.post('/', function(req, res) {
 
   fetchArticles(req,res,0,1);
@@ -82,6 +85,6 @@ console.log("chansey");
 // var port = Number();
 app.set('port', process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 5000);
 app.set('ip', process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
-app.listen(app.get('port'), function() {
+app.listen(app.get('port'),app.get('ip'), function() {
   console.log("Listening on " + app.get('port'));
 });
