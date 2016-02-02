@@ -53,7 +53,8 @@ function fetchArticles(req, res,responsesSent,page){
           uri: responseURL,
           method: 'POST',
           json: {
-            "text": webUrl
+            "text": webUrl,
+            "response_type": "in_channel"
           }
         };
 
