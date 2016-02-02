@@ -12,7 +12,7 @@ var guardian = require('guardian-news');
 var http = require('http');
 
 guardian.config({
-  apiKey: process.env.GUARDIAN_KEY
+  apiKey: process.env.GUARDIAN_KEY || ""
 });
 
 app.post('/', function(req, res) {
