@@ -25,7 +25,7 @@ app.post('/', function(req, res) {
 
 function fetchArticles(req, res,responsesSent,page){
   console.log(req.body);
-  var desiredResults = 5;
+  var desiredResults = 1;
   guardian.content({
     page:page,
     pageSize: desiredResults*10,
