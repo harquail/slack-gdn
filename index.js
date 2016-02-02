@@ -42,18 +42,18 @@ function fetchArticles(req, res,responsesSent,page){
       if(responsesSent >= desiredResults){
         break;
       }
-
+      console.log(currentResult);
       var webUrl = currentResult.webUrl;
+      var webTitle = currentResult.webTitle;
       if (cache.get(webUrl) == null){
         cache.put(webUrl, webUrl, 1000000); // Time in ms (10s)
         var responseURL = req.body.response_url;
-        console.log("url " + webUrl);
 
         var options = {
           uri: responseURL,
           method: 'POST',
           json: {
-            "text": "<"+webUrl+">",
+            "text": webTitle + ": "+webUrl,
             "response_type": "in_channel",
             "unfurl_links": "true"
           }
