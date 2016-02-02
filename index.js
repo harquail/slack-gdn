@@ -1,5 +1,6 @@
 require('dotenv').load();
-var express = require("express");
+var express = require('express');
+var request = require('request');
 var app = express();
 var bodyParser = require('body-parser')
 app.use(bodyParser.json()); // to support JSON-encoded bodies
@@ -16,12 +17,15 @@ guardian.config({
 
 app.post('/', function(req, res) {
 
+  fetchArticles(req,res,0,1);
+
+})
+
+function fetchArticles(req, res,responsesSent,page){
   var desiredResults = 5;
-  var responsesSent = 0;
-  
   guardian.content({
-    page:1,
-    pageSize: 50,
+    page:page,
+    pageSize: desiredResults*10,
     q: req.body.text
   }).then(function(response) {
 
@@ -29,39 +33,50 @@ app.post('/', function(req, res) {
     var currentPage = response.response.currentPage;
     var results = response.response.results;
 
-console.log("hiya");
-
-    // var responseData;
-    // var i = 0;
     while (results.length > 0) {
       var currentResult = results.shift();
-      // console.log(currentResult);
       if(responsesSent >= desiredResults){
         break;
       }
 
       var webUrl = currentResult.webUrl;
       if (cache.get(webUrl) == null){
-        console.log(webUrl)
         cache.put(webUrl, webUrl, 1000000); // Time in ms (10s)
-        // i += 1;
+        var responseURL = req.body.response_url;
+
+
+        var options = {
+          uri: responseURL,
+          method: 'POST',
+          json: {
+            "text": webUrl
+          }
+        };
+
+        request(options, function (error, response, body) {
+          if (!error && response.statusCode == 200) {
+            console.log(response) // Print the shortened url.
+          }
+          else{
+            console.log(error);
+            console.log(response.statusCode);
+          }
+        });
+
+console.log("chansey");
         responsesSent +=1;
       }
-      else{
-        console.log("+ already visited: " + webUrl);
-        // i += 1;
-      }
-
     }
-    console.log("page " + currentPage + " of "+ totalPages);
 
-
-    res.send()
+    if(responsesSent < desiredResults && currentPage < totalPages){
+      fetchArticles(req, res,responsesSent,currentPage+1);
+    }else{
+      res.send();
+    }
   }, function(err) {
     console.log(err);
   });
-
-})
+}
 
 
 var port = Number(process.env.PORT || 5000);
