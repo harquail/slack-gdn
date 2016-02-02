@@ -79,7 +79,8 @@ console.log("chansey");
 }
 
 
-var port = Number(process.env.OPENSHIFT_NODEJS_PORT || 5000);
+var port = Number(process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 5000);
+app.set('ip', process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
 app.listen(port, function() {
   console.log("Listening on " + port);
 });
