@@ -44,7 +44,13 @@ function postArticleToSlack(url, title, articleUrl) {
 }
 
 function fetchArticles(req, res, responsesSent, page) {
+
+  var splitText = req.body.text.split(/[ ,]+/);
+  var lastWord = splitText[splitText.length -1];
+  var lastWordAsInt = parseInt(lastWord);
+  console.log(lastWordAsInt);
   var desiredResults = 1;
+
   guardian.content({
     page: page,
     pageSize: desiredResults * 10,
@@ -53,6 +59,7 @@ function fetchArticles(req, res, responsesSent, page) {
     var totalPages = response.response.pages;
     var currentPage = response.response.currentPage;
     var results = response.response.results;
+
 
     while (results.length > 0) {
       var currentResult = results.shift();
@@ -65,7 +72,7 @@ function fetchArticles(req, res, responsesSent, page) {
       if (cache.get(webUrl) == null) {
         cache.put(webUrl, webUrl, 1000000); // Time in ms (10s)
         var responseURL = req.body.response_url;
-        
+
         postArticleToSlack(responseURL,webTitle,webUrl);
 
         responsesSent += 1;
