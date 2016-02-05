@@ -20,69 +20,67 @@ app.get('/', function(req, res) {
   res.send("visited urls: " + cache.keys().toString());
 })
 app.post('/', function(req, res) {
-  fetchArticles(req,res,0,1);
+  fetchArticles(req, res, 0, 1);
 })
 
-function fetchArticles(req, res,responsesSent,page){
-  console.log(req.body);
+function postArticleToSlack(url, title, articleUrl) {
+  var options = {
+    uri: responseURL,
+    method: 'POST',
+    json: {
+      "text": webTitle + ": " + webUrl,
+      "response_type": "in_channel",
+      "unfurl_links": "true"
+    }
+  };
+
+  request(options, function(error, response, body) {
+    if (!error && response.statusCode == 200) {
+      console.log(response) // Print the shortened url.
+    } else {
+      console.log(error);
+    }
+  });
+}
+
+function fetchArticles(req, res, responsesSent, page) {
   var desiredResults = 1;
   guardian.content({
-    page:page,
-    pageSize: desiredResults*10,
+    page: page,
+    pageSize: desiredResults * 10,
     q: req.body.text
   }).then(function(response) {
-    console.log("then");
-
     var totalPages = response.response.pages;
     var currentPage = response.response.currentPage;
     var results = response.response.results;
 
     while (results.length > 0) {
       var currentResult = results.shift();
-      if(responsesSent >= desiredResults){
+      if (responsesSent >= desiredResults) {
         break;
       }
       console.log(currentResult);
       var webUrl = currentResult.webUrl;
       var webTitle = currentResult.webTitle;
-      if (cache.get(webUrl) == null){
+      if (cache.get(webUrl) == null) {
         cache.put(webUrl, webUrl, 1000000); // Time in ms (10s)
         var responseURL = req.body.response_url;
+        
+        postArticleToSlack(responseURL,webTitle,webUrl);
 
-        var options = {
-          uri: responseURL,
-          method: 'POST',
-          json: {
-            "text": webTitle + ": "+webUrl,
-            "response_type": "in_channel",
-            "unfurl_links": "true"
-          }
-        };
-
-        request(options, function (error, response, body) {
-          if (!error && response.statusCode == 200) {
-            console.log(response) // Print the shortened url.
-          }
-          else{
-            console.log(error);
-            console.log(response.statusCode);
-          }
-        });
-
-        responsesSent +=1;
+        responsesSent += 1;
       }
     }
 
-    if(responsesSent < desiredResults && currentPage < totalPages){
-      fetchArticles(req, res,responsesSent,currentPage+1);
-    }else{
+    if (responsesSent < desiredResults && currentPage < totalPages) {
+      fetchArticles(req, res, responsesSent, currentPage + 1);
+    } else {
       res.send();
     }
   }, function(err) {
     console.log(err);
   });
 }
-
 
 // var port = Number();
 app.set('port', process.env.PORT || 5000);
