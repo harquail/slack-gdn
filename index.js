@@ -48,9 +48,12 @@ function fetchArticles(req, res, responsesSent, page) {
   var splitText = req.body.text.split(/[ ,]+/);
   var lastWord = splitText[splitText.length -1];
   var lastWordAsInt = parseInt(lastWord);
-  console.log(lastWordAsInt);
+
   var desiredResults = 1;
 
+  if(lastWordAsInt && lastWordAsInt <= 5){
+    desiredResults = Math.min(lastWordAsInt,5);
+  }
   guardian.content({
     page: page,
     pageSize: desiredResults * 10,
@@ -73,7 +76,9 @@ function fetchArticles(req, res, responsesSent, page) {
         cache.put(webUrl, webUrl, 1000000); // Time in ms (10s)
         var responseURL = req.body.response_url;
 
+        console.log("before post");
         postArticleToSlack(responseURL,webTitle,webUrl);
+        console.log("after post");
 
         responsesSent += 1;
       }
