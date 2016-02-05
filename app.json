@@ -1,0 +1,14 @@
+{
+  "name": "slack-gdn",
+  "description": "A Slack integration (slash command) for The Guardian's content API. Remembers recently-posted articles, so it does not repeat itself.",
+  "keywords": [
+    "productivity",
+    "guardian",
+    "slack"
+  ],
+  "website": "http://harquail.com/portfolio/slack-gdn",
+  "repository": "https://github.com/harquail/slack-gdn/",
+  "env": {
+    "GUARDIAN_KEY": ""
+  }
+}
