@@ -47,24 +47,26 @@ function postArticleToSlack(url, title, articleUrl) {
 function fetchArticles(req, res, responsesSent, page) {
 
   var splitText = req.body.text.split(/[ ,]+/);
-  var lastWord = splitText[splitText.length -1];
+  var lastWord = splitText.pop();
   var lastWordAsInt = parseInt(lastWord);
 
   var desiredResults = 1;
 
+  var query = req.body.text;
   if(lastWordAsInt && lastWordAsInt <= 5){
     desiredResults = Math.min(lastWordAsInt,5);
+    query = splitText.join(" ");
   }
+  // console.log(query);
 
   guardian.content({
     page: page,
     pageSize: desiredResults * 10,
-    q: req.body.text
+    q: query
   }).then(function(response) {
     var totalPages = response.response.pages;
     var currentPage = response.response.currentPage;
     var results = response.response.results;
-
 
     while (results.length > 0) {
       var currentResult = results.shift();
