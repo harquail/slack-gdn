@@ -1,4 +1,4 @@
-# Slack-gdn
+# slack-gdn
 
 [Demo Video](https://www.youtube.com/watch?v=bBdAoHpn1MU)
 
