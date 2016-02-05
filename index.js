@@ -25,14 +25,15 @@ app.post('/', function(req, res) {
 
 function postArticleToSlack(url, title, articleUrl) {
   var options = {
-    uri: responseURL,
+    uri: url,
     method: 'POST',
     json: {
-      "text": webTitle + ": " + webUrl,
+      "text": title + ": " + articleUrl,
       "response_type": "in_channel",
       "unfurl_links": "true"
     }
   };
+  // console.log("mid-post")
 
   request(options, function(error, response, body) {
     if (!error && response.statusCode == 200) {
@@ -54,6 +55,7 @@ function fetchArticles(req, res, responsesSent, page) {
   if(lastWordAsInt && lastWordAsInt <= 5){
     desiredResults = Math.min(lastWordAsInt,5);
   }
+
   guardian.content({
     page: page,
     pageSize: desiredResults * 10,
@@ -69,16 +71,16 @@ function fetchArticles(req, res, responsesSent, page) {
       if (responsesSent >= desiredResults) {
         break;
       }
-      console.log(currentResult);
+      // console.log(currentResult);
       var webUrl = currentResult.webUrl;
       var webTitle = currentResult.webTitle;
       if (cache.get(webUrl) == null) {
         cache.put(webUrl, webUrl, 1000000); // Time in ms (10s)
         var responseURL = req.body.response_url;
 
-        console.log("before post");
+        // console.log("before post");
         postArticleToSlack(responseURL,webTitle,webUrl);
-        console.log("after post");
+        // console.log("after post");
 
         responsesSent += 1;
       }
